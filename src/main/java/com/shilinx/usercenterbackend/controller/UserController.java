@@ -58,6 +58,22 @@ public class UserController {
         return userService.userLogin(userAccount,userPassword,request);
     }
 
+    @GetMapping("/current")
+    public User getCurrentUser( HttpServletRequest request) {
+        //获取当选登录用户
+        Object userObj = request.getSession().getAttribute(USER_LOGIN_STATUS);
+        User currentUser = (User) userObj;
+        //判空
+        if (currentUser == null) {
+            return null;
+        }
+        //根据主键从数据库中查询用户信息
+        long id = currentUser.getId();
+        User user = userService.getById(id);
+        //脱敏返回
+        return userService.getSafetyUser(user);
+    }
+
     @GetMapping("/search")
     public List<User> searchUser(String userName,HttpServletRequest request) {
         //todo 最好写在service里
